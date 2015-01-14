@@ -20,7 +20,7 @@ module ActionWebService # :nodoc:
         base.class_inheritable_option(:action_base)
         base.class_inheritable_option(:action_base_url)
       end
-      
+
       class SoapProtocol < AbstractProtocol # :nodoc:
         AWSEncoding = 'UTF-8'
         XSDEncoding = 'UTF8'
@@ -40,7 +40,7 @@ module ActionWebService # :nodoc:
           return nil unless soap_action = has_valid_soap_action?(action_pack_request)
           service_name = action_pack_request.parameters['action']
           input_encoding = parse_charset(action_pack_request.env['HTTP_CONTENT_TYPE'])
-          protocol_options = { 
+          protocol_options = {
             :soap_action => soap_action,
             :charset  => input_encoding
           }
@@ -108,7 +108,7 @@ module ActionWebService # :nodoc:
                 SOAP::SOAPQName.new('%s:%s' % ['env', 'Server']),
                 SOAP::SOAPString.new(return_value.to_s),
                 SOAP::SOAPString.new(self.class.name),
-                marshaler.ruby_to_soap(detail))
+                marshaler.ruby_to_soap([return_value.message, return_value.backtrace].join("\n")))
             else
               if return_type
                 param_def = [['retval', 'return', marshaler.lookup_type(return_type).mapping]]

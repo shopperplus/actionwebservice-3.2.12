@@ -26,6 +26,7 @@ module ActionWebService # :nodoc:
         XSDEncoding = 'UTF8'
 
         attr :marshaler
+        attr_reader :action_pack_request
 
         def initialize(namespace=nil)
           namespace ||= 'urn:ActionWebService'
@@ -37,6 +38,7 @@ module ActionWebService # :nodoc:
         end
 
         def decode_action_pack_request(action_pack_request)
+          @action_pack_request = action_pack_request
           return nil unless soap_action = has_valid_soap_action?(action_pack_request)
           service_name = action_pack_request.parameters['action']
           input_encoding = parse_charset(action_pack_request.env['HTTP_CONTENT_TYPE'])
@@ -103,6 +105,9 @@ module ActionWebService # :nodoc:
             response = SOAP::RPC::SOAPMethodResponse.new(qname, nil)
           else
             if return_value.is_a?(Exception)
+              if defined?(ExceptionNotifier) && action_pack_request
+                ExceptionNotifier.notify_exception(return_value, :env => action_pack_request.env, :data => {:message => "Scan Gun Fail."})
+              end
               detail = SOAP::Mapping::SOAPException.new(return_value)
               response = SOAP::SOAPFault.new(
                 SOAP::SOAPQName.new('%s:%s' % ['env', 'Server']),

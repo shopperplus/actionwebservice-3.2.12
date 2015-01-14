@@ -108,7 +108,7 @@ module ActionWebService # :nodoc:
                 SOAP::SOAPQName.new('%s:%s' % ['env', 'Server']),
                 SOAP::SOAPString.new(return_value.to_s),
                 SOAP::SOAPString.new(self.class.name),
-                marshaler.ruby_to_soap([return_value.message, return_value.backtrace].join("\n")))
+                marshaler.ruby_to_soap(return_value.message))
             else
               if return_type
                 param_def = [['retval', 'return', marshaler.lookup_type(return_type).mapping]]

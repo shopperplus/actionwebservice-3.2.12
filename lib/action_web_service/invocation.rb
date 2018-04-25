@@ -91,7 +91,7 @@ module ActionWebService # :nodoc:
       def included_intercepted_methods # :nodoc:
         read_inheritable_attribute("included_intercepted_methods") || {}
       end
-      
+
       def excluded_intercepted_methods # :nodoc:
         read_inheritable_attribute("excluded_intercepted_methods") || {}
       end
@@ -126,7 +126,8 @@ module ActionWebService # :nodoc:
     module InstanceMethods # :nodoc:
       def self.included(base)
         base.class_eval do
-          alias_method_chain :perform_invocation, :interception
+          alias_method :perform_invocation_without_interception, :perform_invocation
+          alias_method :perform_invocation, :perform_invocation_with_interception
         end
       end
 
@@ -184,7 +185,7 @@ module ActionWebService # :nodoc:
         def interceptor_block?(interceptor)
           interceptor.respond_to?("call") && (interceptor.arity == 3 || interceptor.arity == -1)
         end
-        
+
         def interceptor_class?(interceptor)
           interceptor.respond_to?("intercept")
         end
@@ -193,7 +194,7 @@ module ActionWebService # :nodoc:
           case
             when self.class.included_intercepted_methods[interceptor]
               !self.class.included_intercepted_methods[interceptor].include?(method_name)
-            when self.class.excluded_intercepted_methods[interceptor] 
+            when self.class.excluded_intercepted_methods[interceptor]
               self.class.excluded_intercepted_methods[interceptor].include?(method_name)
           end
         end

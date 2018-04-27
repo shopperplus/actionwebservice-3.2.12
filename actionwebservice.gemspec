@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
   s.add_dependency('actionpack', '>= 3.2.12')
   s.add_dependency('activerecord', '>= 3.2.12')
   s.add_dependency('activesupport', '>= 3.2.12')
-  
+  s.add_dependency 'xmlrpc'
+
   s.has_rdoc = true
   s.requirements << 'none'
   s.require_path = 'lib'
